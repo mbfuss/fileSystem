@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -11,42 +10,33 @@ import (
 	"time"
 )
 
-// FileInfoWithSize - это структура, которая комбинирует информацию о файле с дополнительным полем для хранения размера файла или директории.
+// FileInfoWithSize - структура, которая комбинирует информацию о файле с дополнительным полем для хранения размера файла или директории.
 type FileInfoWithSize struct {
-	Name   string
-	IsFile bool
-	Size   int64
+	Name   string // Имя файла
+	IsFile bool   // Тип файла
+	Size   int64  // Размер файла
 }
 
 func main() {
 	start := time.Now()
-
+	// Создание флагов и получение их значений
 	root, sortOrder := parseFlags()
 
 	// Получение списка файлов из каталога
-	files, err := ioutil.ReadDir(*root)
+	entries, err := os.ReadDir(*root)
 	if err != nil {
 		fmt.Printf("Ошибка чтения директории: %v\n", err)
 		return
 	}
 
 	// Обработка файлов и директорий для получения размеров
-	fileInfoWithSizes := processFiles(*root, files)
+	fileInfoWithSizes := processFiles(*root, entries)
 
 	// Сортировка файлов и директорий по размеру
 	sortFiles(fileInfoWithSizes, *sortOrder)
 
 	// Вывод результатов в виде таблицы
-	fmt.Printf("%-10s %-30s %15s\n", "Тип", "Имя", "Размер")
-	for _, fileInfo := range fileInfoWithSizes {
-		// Определение типа: файл или директория
-		fileType := "Файл"
-		if !fileInfo.IsFile {
-			fileType = "Дир"
-		}
-		// Вывод информации о файле или директории
-		fmt.Printf("%-10s %-30s %15s\n", fileType, fileInfo.Name, formatSize(fileInfo.Size))
-	}
+	printFileInfoTable(fileInfoWithSizes)
 
 	duration := time.Since(start)
 	fmt.Println("Время выполнения программы", duration)
@@ -55,10 +45,10 @@ func main() {
 // parseFlags - функция для создания флагов и проверки их на валидность
 func parseFlags() (root *string, sortOrder *string) {
 	root = flag.String("root", "", "Путь до корневой директории")
-	sortOrder = flag.String("sort", "", "Порядок сортировки: asc (возрастание) или des (убывание)")
+	sortOrder = flag.String("sort", "asc", "Порядок сортировки: asc (возрастание) или des (убывание)")
 	flag.Parse()
 
-	if *root == "" || *sortOrder == "" {
+	if *root == "" || (*sortOrder != "asc" && *sortOrder != "des") {
 		flag.Usage()
 		log.Fatal("Флаги переданы неверно")
 	}
@@ -68,27 +58,41 @@ func parseFlags() (root *string, sortOrder *string) {
 
 // processFiles - принимает корневую директорию и список файлов/директорий, вычисляет размер каждого элемента,
 // и возвращает список структур FileInfoWithSize, которые содержат информацию о файлах/директориях и их размерах.
-func processFiles(root string, files []os.FileInfo) []FileInfoWithSize {
+func processFiles(root string, entries []os.DirEntry) []FileInfoWithSize {
 	var result []FileInfoWithSize
-	for _, file := range files {
+	// Создается полный путь к текущему элементу, используя функцию filepath.Join, которая корректно объединяет корневую директорию (root)
+	// и имя текущего элемента (entry.Name()).
+	for _, entry := range entries {
 		// Полный путь к файлу или директории
-		fullPath := filepath.Join(root, file.Name())
-		size := file.Size()
-		isFile := !file.IsDir()
+		fullPath := filepath.Join(root, entry.Name())
+		// Получаем информацию о каждом файле
+		fileInfo, err := entry.Info()
+		if err != nil {
+			fmt.Printf("Ошибка получения информации о файле: %v\n", err)
+			continue
+		}
+		// Получаем размер текущего элемента
+		size := fileInfo.Size()
+		// Если это не директория, то это файл
+		isFile := !entry.IsDir()
 		if !isFile {
 			// Если это директория, вычисляем её размер
-			size = getDirSize(fullPath)
+			size, err = getDirSize(fullPath)
+			if err != nil {
+				fmt.Printf("Ошибка чтения директории в рекурсивной функции: %v\n", err)
+			}
 		}
 		// Добавление информации о файле или директории в результат
-		result = append(result, FileInfoWithSize{Name: file.Name(), IsFile: isFile, Size: size})
+		result = append(result, FileInfoWithSize{Name: entry.Name(), IsFile: isFile, Size: size})
 	}
 	return result
 }
 
 // getDirSize - функция которая вычисляет размер директории
-func getDirSize(path string) int64 {
+func getDirSize(path string) (int64, error) {
 	var size int64
 	// Рекурсивно проходит по всем файлам и поддиректориям, начиная с указанного пути (path)
+	// Анонимная функция вызывается для каждого файла и директории, найденных во время обхода
 	err := filepath.Walk(path, func(_ string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
@@ -99,10 +103,8 @@ func getDirSize(path string) int64 {
 		}
 		return nil
 	})
-	if err != nil {
-		fmt.Printf("Ошибка чтения директории в рекурсивной функции: %v\n", err)
-	}
-	return size
+
+	return size, err
 }
 
 // Функция для сортировки файлов и директорий по размеру
@@ -119,17 +121,34 @@ func sortFiles(files []FileInfoWithSize, order string) {
 
 // Функция для форматирования размера файла или директории в читаемый вид
 func formatSize(size int64) string {
-	const unit = 1024
+	const unit = 1000
 	if size < unit {
-		// Если размер меньше 1024 байт, выводим в байтах
+		// Если размер меньше 1 килобайта, выводим в байтах
 		return fmt.Sprintf("%d B", size)
 	}
+	// div: переменная для хранения текущего масштаба единицы измерения. Изначально устанавливается в 1000 (1 килобайт)
+	// exp: переменная для хранения экспоненты, указывающей на текущую единицу измерения. Изначально установлена в 0 (для байт)
 	div, exp := int64(unit), 0
 	// Цикл с делением размера файла на единицу измерения (1024)
-	for n := size / unit; n >= unit; n /= unit {
+	for n := size / unit; n >= unit; {
+		n /= unit
 		div *= unit
 		exp++
 	}
 	// Форматированный вывод с одной цифрой после запятой
-	return fmt.Sprintf("%.1f %cB", float64(size)/float64(div), "KMGTPE"[exp])
+	return fmt.Sprintf("%.1f %cB", float64(size)/float64(div), "KMGT"[exp])
+}
+
+// Функция для вывода информации о файлах и директориях в виде таблицы
+func printFileInfoTable(fileInfoWithSizes []FileInfoWithSize) {
+	fmt.Printf("%-10s %-30s %15s\n", "Тип", "Имя", "Размер")
+	for _, fileInfo := range fileInfoWithSizes {
+		// Определение типа: файл или директория
+		fileType := "Файл"
+		if !fileInfo.IsFile {
+			fileType = "Дир"
+		}
+		// Вывод информации о файле или директории
+		fmt.Printf("%-10s %-30s %15s\n", fileType, fileInfo.Name, formatSize(fileInfo.Size))
+	}
 }
