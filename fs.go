@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"sync"
 	"time"
 )
 
@@ -62,32 +63,38 @@ func parseFlags() (root *string, sortOrder *string) {
 // processFiles - принимает корневую директорию и список файлов/директорий, вычисляет размер каждого элемента,
 // и возвращает список структур FileInfoWithSize, которые содержат информацию о файлах/директориях и их размерах.
 func processFiles(root string, entries []os.DirEntry) []FileInfoWithSize {
-	var result []FileInfoWithSize
-	// Создается полный путь к текущему элементу, используя функцию filepath.Join, которая корректно объединяет корневую директорию (root)
-	// и имя текущего элемента (entry.Name()).
-	for _, entry := range entries {
-		// Полный путь к файлу или директории
-		fullPath := filepath.Join(root, entry.Name())
-		// Получаем информацию о каждом файле
-		fileInfo, err := entry.Info()
-		if err != nil {
-			fmt.Printf("Ошибка получения информации о файле: %v\n", err)
-			continue
-		}
-		// Получаем размер текущего элемента
-		size := fileInfo.Size()
-		// Если это не директория, то это файл
-		isFile := !entry.IsDir()
-		if !isFile {
-			// Если это директория, вычисляем её размер
-			size, err = getDirSize(fullPath)
+	var wg sync.WaitGroup
+	var result = make([]FileInfoWithSize, len(entries))
+	for i, entry := range entries {
+		wg.Add(1)
+		go func(i int, entry os.DirEntry) {
+			defer wg.Done()
+			// Полный путь к файлу или директории
+			fullPath := filepath.Join(root, entry.Name())
+			// Получаем информацию о каждом файле
+			fileInfo, err := entry.Info()
 			if err != nil {
-				fmt.Printf("Ошибка чтения директории в рекурсивной функции: %v\n", err)
+				fmt.Printf("Ошибка получения информации о файле: %v\n", err)
+				return
 			}
-		}
-		// Добавление информации о файле или директории в результат
-		result = append(result, FileInfoWithSize{Name: entry.Name(), IsFile: isFile, Size: size})
+			// Получаем размер текущего элемента
+			size := fileInfo.Size()
+			// Если это не директория, то это файл
+			isFile := !entry.IsDir()
+			if !isFile {
+				// Если это директория, вычисляем её размер
+				size, err = getDirSize(fullPath)
+				if err != nil {
+					fmt.Printf("Ошибка чтения директории в рекурсивной функции: %v\n", err)
+				}
+			}
+			// Добавление информации о файле или директории в результат
+			// Индексы для записей: Каждой горутине передаётся индекс i, который соответствует позиции в срезе result. Это гарантирует,
+			// что каждая горутина будет записывать результат в уникальное место в срезе, тем самым предотвращая конкуренцию.
+			result[i] = FileInfoWithSize{Name: entry.Name(), IsFile: isFile, Size: size}
+		}(i, entry)
 	}
+	wg.Wait()
 	return result
 }
 
