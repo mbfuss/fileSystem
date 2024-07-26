@@ -32,6 +32,8 @@ func main() {
 }
 
 // handleFileRequest - функция, которая обрабатывает http запросы
+// http.ResponseWriter — интерфейс, который предоставляет методы для формирования и отправки HTTP-ответов клиенту
+// http.Request — это указатель на структуру http.Request в Go, которая представляет собой HTTP-запрос, отправленный клиентом на сервер
 func handleFileRequest(w http.ResponseWriter, r *http.Request) {
 	start := time.Now()
 
@@ -58,9 +60,12 @@ func handleFileRequest(w http.ResponseWriter, r *http.Request) {
 	// Сортировка файлов и директорий по размеру
 	sortFiles(fileInfoWithSizes, sortOrder)
 
-	// Форматирование данных в JSON
+	// Указываем, что вывод будет в формате json
 	w.Header().Set("Content-Type", "application/json")
-	if err := json.NewEncoder(w).Encode(fileInfoWithSizes); err != nil {
+	// json.NewEncoder(w) создает новый JSON-энкодер, который будет записывать данные прямо в http.ResponseWriter (w), то есть отправлять данные клиенту
+	// .Encode(fileInfoWithSizes) преобразует fileInfoWithSizes (срез структур FileInfoWithSize) в JSON-формат и отправляет его в ответе
+	err = json.NewEncoder(w).Encode(fileInfoWithSizes)
+	if err != nil {
 		http.Error(w, fmt.Sprintf("Ошибка кодирования в JSON: %v", err), http.StatusInternalServerError)
 		return
 	}
@@ -76,7 +81,7 @@ func processFiles(root string, entries []os.DirEntry) []FileInfoWithSize {
 	var result = make([]FileInfoWithSize, len(entries))
 	for i, entry := range entries {
 		wg.Add(1)
-		go func(i int, entry os.DirEntry) {
+		go func(i int, entry os.DirEntry, wg *sync.WaitGroup, result []FileInfoWithSize) {
 			defer wg.Done()
 			fullPath := filepath.Join(root, entry.Name())
 			fileInfo, err := entry.Info()
@@ -93,7 +98,7 @@ func processFiles(root string, entries []os.DirEntry) []FileInfoWithSize {
 				}
 			}
 			result[i] = FileInfoWithSize{Name: entry.Name(), IsFile: isFile, Size: size}
-		}(i, entry)
+		}(i, entry, &wg, result)
 	}
 	wg.Wait()
 	return result
