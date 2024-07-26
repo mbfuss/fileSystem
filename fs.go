@@ -67,32 +67,24 @@ func processFiles(root string, entries []os.DirEntry) []FileInfoWithSize {
 	var result = make([]FileInfoWithSize, len(entries))
 	for i, entry := range entries {
 		wg.Add(1)
-		go func(i int, entry os.DirEntry) {
+		go func(i int, entry os.DirEntry, wg *sync.WaitGroup, result []FileInfoWithSize) {
 			defer wg.Done()
-			// Полный путь к файлу или директории
 			fullPath := filepath.Join(root, entry.Name())
-			// Получаем информацию о каждом файле
 			fileInfo, err := entry.Info()
 			if err != nil {
 				fmt.Printf("Ошибка получения информации о файле: %v\n", err)
 				return
 			}
-			// Получаем размер текущего элемента
 			size := fileInfo.Size()
-			// Если это не директория, то это файл
 			isFile := !entry.IsDir()
 			if !isFile {
-				// Если это директория, вычисляем её размер
 				size, err = getDirSize(fullPath)
 				if err != nil {
 					fmt.Printf("Ошибка чтения директории в рекурсивной функции: %v\n", err)
 				}
 			}
-			// Добавление информации о файле или директории в результат
-			// Индексы для записей: Каждой горутине передаётся индекс i, который соответствует позиции в срезе result. Это гарантирует,
-			// что каждая горутина будет записывать результат в уникальное место в срезе, тем самым предотвращая конкуренцию.
 			result[i] = FileInfoWithSize{Name: entry.Name(), IsFile: isFile, Size: size}
-		}(i, entry)
+		}(i, entry, &wg, result)
 	}
 	wg.Wait()
 	return result
