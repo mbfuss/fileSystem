@@ -104,6 +104,10 @@ func getDirSize(path string) (int64, error) {
 		if !info.IsDir() {
 			size += info.Size()
 		}
+		// Учет размера папки
+		if info.IsDir() {
+			size += 4000
+		}
 		return nil
 	})
 
