@@ -17,6 +17,9 @@ type FileInfoWithSize struct {
 	Size   int64  // Размер файла
 }
 
+const desc = "desc"
+const asc = "asc"
+
 func main() {
 	start := time.Now()
 	// Создание флагов и получение их значений
@@ -45,10 +48,10 @@ func main() {
 // parseFlags - функция для создания флагов и проверки их на валидность
 func parseFlags() (root *string, sortOrder *string) {
 	root = flag.String("root", "", "Путь до корневой директории")
-	sortOrder = flag.String("sort", "asc", "Порядок сортировки: asc (возрастание) или des (убывание)")
+	sortOrder = flag.String("sort", "asc", "Порядок сортировки: asc (возрастание) или desc (убывание)")
 	flag.Parse()
 
-	if *root == "" || (*sortOrder != "asc" && *sortOrder != "des") {
+	if *root == "" || (*sortOrder != asc && *sortOrder != desc) {
 		flag.Usage()
 		log.Fatal("Флаги переданы неверно")
 	}
