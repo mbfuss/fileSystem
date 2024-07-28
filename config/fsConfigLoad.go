@@ -1,4 +1,4 @@
-package env
+package config
 
 import (
 	"bufio"
@@ -6,6 +6,7 @@ import (
 	"strings"
 )
 
+// LoadEnv - чтение файла .env
 func LoadEnv(filename string) error {
 	file, err := os.Open(filename)
 	if err != nil {

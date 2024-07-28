@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/mbfuss/sortingFiles/env"
+	"github.com/mbfuss/sortingFiles/config"
 	"github.com/mbfuss/sortingFiles/service"
 	"log"
 	"net/http"
@@ -11,7 +11,7 @@ import (
 
 func main() {
 	// Загружаем переменные из .env файла
-	err := env.LoadEnv("serverPort.env")
+	err := config.LoadEnv("config/serverPort.env")
 	if err != nil {
 		log.Fatalf("Ошибка загрузки .env файла: %v", err)
 	}
