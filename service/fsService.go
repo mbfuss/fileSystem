@@ -21,7 +21,7 @@ type FileInfoWithSize struct {
 const desc = "desc"
 const asc = "asc"
 
-// getRequestParams - получает и проверяет параметры запроса root и sortOrder
+// GetRequestParams - получает и проверяет параметры запроса root и sortOrder
 func GetRequestParams(r *http.Request) (string, string, error) {
 	root := r.URL.Query().Get("root")
 	sortOrder := r.URL.Query().Get("sort")
@@ -63,6 +63,7 @@ func ProcessFiles(root string, entries []os.DirEntry) []FileInfoWithSize {
 			result[i] = FileInfoWithSize{
 				Name:       entry.Name(),
 				IsFile:     formatIsFile(isFile),
+				Size:       size,
 				FormatSize: formatSize(size),
 			}
 		}(i, entry, &wg, result)
@@ -98,7 +99,7 @@ func getDirSize(path string) (int64, error) {
 // SortFiles - функция для сортировки файлов и директорий по размеру
 func SortFiles(files []FileInfoWithSize, order string) {
 	sort.Slice(files, func(i, j int) bool {
-		if order == "asc" {
+		if order == asc {
 			// Сортировка по возрастанию
 			return files[i].Size < files[j].Size
 		}
