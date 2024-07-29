@@ -10,7 +10,7 @@ import (
 	"sync"
 )
 
-// FileInfoWithSize - структура, которая комбинирует информацию о файле с дополнительным полем для хранения размера файла или директории.
+// FileInfoWithSize - структура, которая комбинирует информацию о файле с дополнительным полем для хранения размера файла или директории
 type FileInfoWithSize struct {
 	Name       string `json:"name"`        // Имя файла
 	IsFile     string `json:"is_file"`     // Тип файла
@@ -33,8 +33,8 @@ func GetRequestParams(r *http.Request) (string, string, error) {
 	return root, sortOrder, nil
 }
 
-// processFiles - принимает корневую директорию и список файлов/директорий, вычисляет размер каждого элемента,
-// и возвращает список структур FileInfoWithSize, которые содержат информацию о файлах/директориях и их размерах.
+// ProcessFiles - принимает корневую директорию и список файлов/директорий, вычисляет размер каждого элемента,
+// и возвращает список структур FileInfoWithSize, которые содержат информацию о файлах/директориях и их размерах
 func ProcessFiles(root string, entries []os.DirEntry) []FileInfoWithSize {
 	var wg sync.WaitGroup
 	var result = make([]FileInfoWithSize, len(entries))
@@ -43,7 +43,7 @@ func ProcessFiles(root string, entries []os.DirEntry) []FileInfoWithSize {
 		go func(i int, entry os.DirEntry, wg *sync.WaitGroup, result []FileInfoWithSize) {
 			defer wg.Done()
 			// Создается полный путь к текущему элементу, используя функцию filepath.Join, которая корректно объединяет корневую директорию (root)
-			// и имя текущего элемента (entry.Name()).
+			// и имя текущего элемента (entry.Name())
 			fullPath := filepath.Join(root, entry.Name())
 			// Получаем информацию о каждом файле
 			fileInfo, err := entry.Info()
@@ -95,7 +95,7 @@ func getDirSize(path string) (int64, error) {
 	return size, err
 }
 
-// Функция для сортировки файлов и директорий по размеру
+// SortFiles - функция для сортировки файлов и директорий по размеру
 func SortFiles(files []FileInfoWithSize, order string) {
 	sort.Slice(files, func(i, j int) bool {
 		if order == "asc" {
@@ -107,7 +107,7 @@ func SortFiles(files []FileInfoWithSize, order string) {
 	})
 }
 
-// Функция для форматирования размера файла или директории в читаемый вид
+// formatSize - функция для форматирования размера файла или директории в читаемый вид
 func formatSize(size int64) string {
 	const unit = 1000
 	if size < unit {

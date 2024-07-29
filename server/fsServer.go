@@ -4,17 +4,17 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/mbfuss/sortingFiles/config"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"time"
 
+	"github.com/mbfuss/sortingFiles/config"
 	"github.com/mbfuss/sortingFiles/service"
 )
 
-// handleFileRequest - функция, которая обрабатывает http запросы
+// HandleFileRequest - функция, которая обрабатывает http запросы
 // http.ResponseWriter — интерфейс, который предоставляет методы для формирования и отправки HTTP-ответов клиенту
 // http.Request — это указатель на структуру http.Request в Go, которая представляет собой HTTP-запрос, отправленный клиентом на сервер
 func HandleFileRequest(w http.ResponseWriter, r *http.Request) {
