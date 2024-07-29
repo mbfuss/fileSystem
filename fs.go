@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/mbfuss/sortingFiles/config"
-	"github.com/mbfuss/sortingFiles/service"
+	"github.com/mbfuss/sortingFiles/server"
 	"log"
 	"net/http"
 	"os"
@@ -22,7 +22,7 @@ func main() {
 		port = "80" // Значение по умолчанию, если PORT не задан
 	}
 	// Регистрация обработчика для пути /fs
-	http.HandleFunc("/fs", service.HandleFileRequest)
+	http.HandleFunc("/fs", server.HandleFileRequest)
 	fmt.Printf("Сервер запущен на порту %s\n", port)
 	// Запускает сервера, который будет прослушивать порт 80
 	// nil -- использовать глобальный маршрутизатор http.DefaultServeMux для обработки запросов.
