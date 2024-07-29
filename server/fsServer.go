@@ -1,10 +1,14 @@
 package server
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/mbfuss/sortingFiles/config"
+	"log"
 	"net/http"
 	"os"
+	"os/signal"
 	"time"
 
 	"github.com/mbfuss/sortingFiles/service"
@@ -46,4 +50,56 @@ func HandleFileRequest(w http.ResponseWriter, r *http.Request) {
 
 	duration := time.Since(start)
 	fmt.Printf("Обработка запроса заняла: %v\n", duration)
+}
+
+func ServerStart() {
+	// Загружаем переменные из .env файла
+	err := config.LoadEnv("config/serverPort.env")
+	if err != nil {
+		log.Fatalf("Ошибка загрузки .env файла: %v", err)
+	}
+
+	// Читаем порт из переменной окружения
+	port := os.Getenv("SERVER_PORT")
+	if port == "" {
+		port = "80" // Значение по умолчанию, если PORT не задан
+	}
+
+	// Создание нового сервера
+	server := &http.Server{
+		Addr:    ":" + port,
+		Handler: http.DefaultServeMux,
+	}
+
+	// Регистрация обработчика для пути /fs
+	http.HandleFunc("/fs", HandleFileRequest)
+
+	// Канал для получения системных сигналов
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop, os.Interrupt, os.Kill)
+
+	// Запуск сервера в отдельной горутине
+	go func() {
+		fmt.Printf("Сервер запущен на порту %s\n", port)
+		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Fatalf("Сервер остановлен с ошибкой: %v", err)
+		}
+	}()
+
+	// Ожидание сигнала завершения
+	<-stop
+	fmt.Println("Получен сигнал завершения, остановка сервера...")
+
+	// Контекст с тайм-аутом для graceful shutdown
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	// Используется для отложенного вызова функции cancel. Это значит, что функция cancel будет вызвана автоматически,
+	// когда выполнение функции ServerStart завершится, даже если произойдёт ошибка.
+	defer cancel()
+
+	// Остановка сервера
+	if err := server.Shutdown(ctx); err != nil {
+		log.Fatalf("Ошибка при остановке сервера: %v", err)
+	}
+
+	fmt.Println("Сервер успешно остановлен")
 }
