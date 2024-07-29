@@ -18,16 +18,19 @@ type FileInfoWithSize struct {
 	FormatSize string `json:"format_size"` // Размер файла после фармотирования
 }
 
-const desc = "desc"
-const asc = "asc"
+const (
+	desc = "desc"
+	asc  = "asc"
+)
 
-// GetRequestParams - получает и проверяет параметры запроса root и sortOrder
+// GetRequestParams - получает и проверяет параметры запроса root и sortOrder.
+// На вход: r *http.Request: Указатель на объект http.Request, который представляет собой HTTP-запрос. Этот объект содержит все данные о запросе, включая URL, заголовки, тело запроса и параметры запроса.
 func GetRequestParams(r *http.Request) (string, string, error) {
 	root := r.URL.Query().Get("root")
 	sortOrder := r.URL.Query().Get("sort")
 
 	if root == "" || (sortOrder != asc && sortOrder != desc) {
-		return "", "", errors.New("Неверные параметры запроса")
+		return "", "", errors.New("неверные параметры запроса")
 	}
 
 	return root, sortOrder, nil
@@ -98,6 +101,8 @@ func getDirSize(path string) (int64, error) {
 
 // SortFiles - функция для сортировки файлов и директорий по размеру
 func SortFiles(files []FileInfoWithSize, order string) {
+	// i и j, указывающие на элементы в срезе, и возвращает булево значение,
+	// указывающее, должен ли элемент с индексом i быть перед элементом с индексом j
 	sort.Slice(files, func(i, j int) bool {
 		if order == asc {
 			// Сортировка по возрастанию

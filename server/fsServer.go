@@ -29,6 +29,7 @@ func HandleFileRequest(w http.ResponseWriter, r *http.Request) {
 	// Получение списка файлов из каталога
 	entries, err := os.ReadDir(root)
 	if err != nil {
+		// http.StatusInternalServerError - Вернет статус ошибки 500
 		http.Error(w, fmt.Sprintf("Ошибка чтения директории: %v", err), http.StatusInternalServerError)
 		return
 	}
@@ -38,7 +39,7 @@ func HandleFileRequest(w http.ResponseWriter, r *http.Request) {
 	// Сортировка файлов и директорий по размеру
 	service.SortFiles(fileInfoWithSizes, sortOrder)
 
-	// Указываем, что вывод будет в формате json
+	// Используется для формирования и отправки HTTP-ответов клиенту в формате json
 	w.Header().Set("Content-Type", "application/json")
 	// json.NewEncoder(w) создает новый JSON-энкодер, который будет записывать данные прямо в http.ResponseWriter (w), то есть отправлять данные клиенту
 	// .Encode(fileInfoWithSizes) преобразует fileInfoWithSizes (срез структур FileInfoWithSize) в JSON-формат и отправляет его в ответе
@@ -52,7 +53,7 @@ func HandleFileRequest(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("Обработка запроса заняла: %v\n", duration)
 }
 
-func ServerStart() {
+func ServerStatusControl() {
 	// Загружаем переменные из .env файла
 	err := config.LoadEnv("config/serverPort.env")
 	if err != nil {
@@ -80,7 +81,10 @@ func ServerStart() {
 	// Запуск сервера в отдельной горутине
 	go func() {
 		fmt.Printf("Сервер запущен на порту %s\n", port)
-		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		// Запуск сервера
+		err := server.ListenAndServe()
+		// Если ошибка не пустая, и если сервер не был корректно остановлен
+		if err != nil && err != http.ErrServerClosed {
 			log.Fatalf("Сервер остановлен с ошибкой: %v", err)
 		}
 	}()
