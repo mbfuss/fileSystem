@@ -2,6 +2,7 @@
 document.addEventListener("DOMContentLoaded", () => {
     // Получаем элементы управления из DOM
     const sortOrderSlider = document.getElementById('sortOrder'); // Слайдер для сортировки
+    // Метод document.querySelector позволяет выбрать первый элемент, который соответствует CSS селектору #fileTable tbody
     const fileTableBody = document.querySelector('#fileTable tbody'); // Таблица для отображения файлов
     const currentPath = document.getElementById('currentPath'); // Элемент для отображения текущего пути
     const cancelButton = document.getElementById('cancelButton'); // Кнопка для перехода назад
@@ -10,6 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let currentRoot = '/';
 
     // Асинхронная функция для получения данных с сервера
+    // root по умолчанию равен currentRoot
     const fetchData = async (root = currentRoot) => {
         // Получаем порядок сортировки из слайдера
         const sortOrder = sortOrderSlider.value === "0" ? "desc" : "asc";
@@ -18,7 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         try {
             // Делаем запрос к серверу для получения списка файлов
-            const response = await fetch(`http://localhost:8080/fs?root=${encodeURIComponent(root)}&sort=${sortOrder}`);
+            const response = await fetch(`/fs?root=${encodeURIComponent(root)}&sort=${sortOrder}`, {method: "GET"});
             // Проверяем успешность ответа
             if (!response.ok) throw new Error('Network response was not ok');
             // Парсим JSON ответ

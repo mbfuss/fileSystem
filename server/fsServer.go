@@ -21,8 +21,11 @@ func HandleFileRequest(w http.ResponseWriter, r *http.Request) {
 	start := time.Now()
 
 	// Добавляем заголовки CORS
+	// Любой домен может получить доступ к ресурсам этого сервера
 	w.Header().Set("Access-Control-Allow-Origin", "*")
+	// Разрешены только методы HTTP-запросов GET и OPTIONS
 	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
+	// Клиенту разрешается использовать заголовок Content-Type в запросах.
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
 	// Получение параметров запроса
@@ -59,6 +62,8 @@ func HandleFileRequest(w http.ResponseWriter, r *http.Request) {
 }
 
 func ServerStatusControl() {
+
+	http.HandleFunc("/s", HandleFileRequest)
 	// Загружаем переменные из .env файла
 	err := config.LoadEnv("config/serverPort.env")
 	if err != nil {
