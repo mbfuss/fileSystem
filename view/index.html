@@ -4,26 +4,25 @@
     <meta charset="UTF-8">
     <title>File system</title>
     <link rel="stylesheet" href="styles.css">
+    <script defer src="script.js"></script> <!-- Подключение JavaScript файла -->
 </head>
 <body>
 <header>
     <h1>FILE SYSTEM</h1>
 </header>
 <div class="container">
-
     <div class="button-group">
-        <button>Назад</button>
+        <button id="cancelButton">Назад</button>
         <div class="sort-slider">
             <span id="sortLabel">Убывание</span>
             <label for="sortOrder"></label><input type="range" id="sortOrder" name="sortOrder" min="0" max="1" step="1">
             <span id="sortLabel">Возрастание</span>
+        </div>
     </div>
-
     <div class="current-path">
-        <p>Текущий путь: /home/user/documents</p>
+        <p id="currentPath"></p>
     </div>
-
-    <table>
+    <table id="fileTable">
         <thead>
         <tr>
             <th>Тип файла</th>
@@ -32,61 +31,12 @@
         </tr>
         </thead>
         <tbody>
-        <tr class="directory">
-            <td>Директория</td>
-            <td>photo</td>
-            <td>1.2 GB</td>
-        </tr>
-        <tr>
-            <td>Файл</td>
-            <td>report.pdf</td>
-            <td>300 KB</td>
-        </tr>
-        <tr>
-            <td>Файл</td>
-            <td>song.mp3</td>
-            <td>4.5 MB</td>
-        </tr>
-        <tr>
-            <td>Файл</td>
-            <td>song.mp3</td>
-            <td>4.5 MB</td>
-        </tr>
-        <tr>
-            <td>Файл</td>
-            <td>song.mp3</td>
-            <td>4.5 MB</td>
-        </tr>
-        <tr>
-            <td>Файл</td>
-            <td>song.mp3</td>
-            <td>4.5 MB</td>
-        </tr>
-        <tr>
-            <td>Файл</td>
-            <td>song.mp3</td>
-            <td>4.5 MB</td>
-        </tr>
-        <tr>
-            <td>Файл</td>
-            <td>song.mp3</td>
-            <td>4.5 MB</td>
-        </tr>
-        <tr>
-            <td>Файл</td>
-            <td>song.mp3</td>
-            <td>4.5 MB</td>
-        </tr>
-
-
+        <!-- Здесь будет обновляться информация о файлах -->
         </tbody>
     </table>
-
 </div>
-</div>
-    <footer>
-        <p class="footer"> ООО НПО "РэйнбовСофт", 2024. Все права защищены.</p>
-    </footer>
+<footer>
+    <p class="footer"> ООО НПО "РэйнбовСофт", 2024. Все права защищены.</p>
+</footer>
 </body>
-
 </html>

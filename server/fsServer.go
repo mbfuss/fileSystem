@@ -20,6 +20,11 @@ import (
 func HandleFileRequest(w http.ResponseWriter, r *http.Request) {
 	start := time.Now()
 
+	// Добавляем заголовки CORS
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
 	// Получение параметров запроса
 	root, sortOrder, err := service.GetRequestParams(r)
 	if err != nil {
@@ -71,6 +76,7 @@ func ServerStatusControl() {
 
 	// Регистрация обработчика для пути /fs
 	http.HandleFunc("/fs", HandleFileRequest)
+	http.Handle("/", http.FileServer(http.Dir("."))) // Обслуживание статических файлов
 
 	// Канал для получения системных сигналов
 	stop := make(chan os.Signal, 1)
