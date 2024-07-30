@@ -63,7 +63,6 @@ func HandleFileRequest(w http.ResponseWriter, r *http.Request) {
 
 func ServerStatusControl() {
 
-	http.HandleFunc("/s", HandleFileRequest)
 	// Загружаем переменные из .env файла
 	err := config.LoadEnv("config/serverPort.env")
 	if err != nil {
@@ -81,7 +80,8 @@ func ServerStatusControl() {
 
 	// Регистрация обработчика для пути /fs
 	http.HandleFunc("/fs", HandleFileRequest)
-	http.Handle("/", http.FileServer(http.Dir("."))) // Обслуживание статических файлов
+	fs := http.FileServer(http.Dir("./view"))
+	http.Handle("/", fs)
 
 	// Канал для получения системных сигналов
 	stop := make(chan os.Signal, 1)
