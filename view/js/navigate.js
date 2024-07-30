@@ -15,9 +15,9 @@ export const navigateToDirectory = (getCurrentRoot, setCurrentRoot, fetchAndUpda
 // - getCurrentRoot: функция для получения текущего пути к директории
 // - setCurrentRoot: функция для обновления текущего пути
 // - fetchData: функция для получения данных с сервера.
-export const navigateBack = (getCurrentRoot, setCurrentRoot, fetchAndUpdateTable) => () => {
+export const navigateBack = (getCurrentRoot, setCurrentRoot, fetchAndUpdateTable,rootDir) => () => {
     const currentRoot = getCurrentRoot();
-    if (currentRoot === '/') return;
+    if (currentRoot === rootDir) return;
 
     const pathParts = currentRoot.split('/').filter(part => part.length > 0);
     pathParts.pop();

@@ -58,7 +58,7 @@ func HandleFileRequest(w http.ResponseWriter, r *http.Request) {
 	}
 
 	duration := time.Since(start)
-	fmt.Printf("Обработка запроса заняла: %v\n", duration)
+	fmt.Printf("Обработка запроса: %v\n", duration)
 }
 
 func ServerStatusControl() {
@@ -78,8 +78,9 @@ func ServerStatusControl() {
 		Handler: http.DefaultServeMux,
 	}
 
-	// Регистрация обработчика для пути /fs
+	// Регистрация обработчиков
 	http.HandleFunc("/fs", HandleFileRequest)
+	http.HandleFunc("/config", HandleConfigRequest) // Новый обработчик
 	fs := http.FileServer(http.Dir("./view"))
 	http.Handle("/", fs)
 
@@ -116,4 +117,32 @@ func ServerStatusControl() {
 	}
 
 	fmt.Println("Сервер успешно остановлен")
+}
+
+// HandleConfigRequest - обработчик для передачи переменной окружения
+func HandleConfigRequest(w http.ResponseWriter, r *http.Request) {
+	start := time.Now()
+
+	// Добавляем заголовки CORS
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+	// Получаем значение переменной окружения
+	rootDir := os.Getenv("ROOT_DIR")
+	if rootDir == "" {
+		rootDir = "/" // Значение по умолчанию, если переменная окружения не установлена
+	}
+
+	// Формируем JSON ответ
+	response := map[string]string{"rootDir": rootDir}
+	w.Header().Set("Content-Type", "application/json")
+	err := json.NewEncoder(w).Encode(response)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Ошибка кодирования в JSON: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	duration := time.Since(start)
+	fmt.Printf("Обработка запроса передачи переменной окружения: %v\n", duration)
 }
