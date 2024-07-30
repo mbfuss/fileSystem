@@ -16,6 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const fileTableBody = document.querySelector('#fileTable tbody'); // Тело таблицы для отображения файлов
     const currentPath = document.getElementById('currentPath'); // Элемент для отображения текущего пути
     const cancelButton = document.getElementById('cancelButton'); // Кнопка для перехода назад
+    const loader = document.getElementById('loader')
 
     // Переменная для хранения текущего пути
     let currentRoot = '/';
@@ -32,8 +33,20 @@ document.addEventListener("DOMContentLoaded", () => {
     const fetchAndUpdateTable = () => {
         // Получаем порядок сортировки из слайдера
         const sortOrder = sortOrderSlider.value === "0" ? desc : asc;
+        // Показать индикатор загрузки
+        loader.style.display = 'block';
         // Получаем данные с сервера и обновляем таблицу
-        fetchData(currentRoot, sortOrder, (data) => updateTable(data, fileTableBody, navigateToDirectory(getCurrentRoot, setCurrentRoot, fetchAndUpdateTable)), currentPath);
+        fetchData(
+            currentRoot,
+            sortOrder,
+            (data) => {
+                updateTable(data, fileTableBody, navigateToDirectory(getCurrentRoot, setCurrentRoot, fetchAndUpdateTable));
+            },
+            currentPath
+        ).finally(() => {
+            // Скрыть индикатор загрузки
+            loader.style.display = 'none';
+        });
     };
 
     // Добавляем обработчики событий к элементам управления.
