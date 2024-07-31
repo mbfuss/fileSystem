@@ -65,6 +65,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const toggleControls = (isDisabled) => {
         sortOrderSlider.classList.toggle('disabled', isDisabled);
         cancelButton.classList.toggle('disabled', isDisabled);
+        fileTableBody.classList.toggle('disabled',isDisabled)
     };
 
 

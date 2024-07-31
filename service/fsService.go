@@ -18,6 +18,14 @@ type FileInfoWithSize struct {
 	FormatSize string `json:"format_size"` // Размер файла после фармотирования
 }
 
+// ResponseData - структура для хранения ответа сервера
+type ResponseData struct {
+	ErrorCode    int                `json:"error_code"`
+	ErrorMessage string             `json:"error_message"`
+	Data         []FileInfoWithSize `json:"data"`
+	Root         string             `json:"root"`
+}
+
 const (
 	desc = "desc"
 	asc  = "asc"
@@ -123,7 +131,7 @@ func formatSize(size int64) string {
 	// div: переменная для хранения текущего масштаба единицы измерения. Изначально устанавливается в 1000 (1 килобайт)
 	// exp: переменная для хранения экспоненты, указывающей на текущую единицу измерения. Изначально установлена в 0 (для байт)
 	div, exp := int64(unit), 0
-	// Цикл с делением размера файла на единицу измерения (1024)
+	// Цикл с делением размера файла на единицу измерения (1000)
 	for n := size / unit; n >= unit; {
 		n /= unit
 		div *= unit

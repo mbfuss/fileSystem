@@ -9,7 +9,6 @@ export const updateTable = (data, fileTableBody, navigateToDirectory) => {
     fileTableBody.innerHTML = '';
 
     // Для каждого файла создаем строку в таблице
-    // Для каждого файла создаем строку в таблице
     data.forEach(file => {
         // Создаем элементы строки и ячеек
         const row = document.createElement('tr');

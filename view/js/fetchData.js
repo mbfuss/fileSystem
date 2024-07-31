@@ -14,15 +14,17 @@ export const fetchData = async (root, sortOrder, updateTable, currentPath) => {
         const response = await fetch(`/fs?root=${encodeURIComponent(root)}&sort=${sortOrder}`, { method: "GET" });
 
         // Проверяем успешность ответа. Если ответ не успешный, выбрасываем ошибку
-        if (!response.ok) throw new Error('Network response was not ok');
+        if (!response.ok) throw new Error('Ошибка ответа сети');
 
         // Парсим JSON ответ от сервера
         const data = await response.json();
 
+
         // Обновляем таблицу с файлами, используя полученные данные
-        updateTable(data);
+        updateTable(data.data);
     } catch (error) {
         // Логируем ошибку в консоль, если произошла ошибка при выполнении запроса
-        console.error('Fetching error:', error);
+        console.error('Ошибка получения данных:', error);
+        alert("Ошибка получения данных")
     }
 };

@@ -5,19 +5,19 @@
  */
 export async function fetchConfig() {
     try {
-        const response = await fetch(`/config`, { method: "GET" });
+        const response = await fetch(`/fs`, { method: "GET" });
 
         if (!response.ok) {
-            throw new Error('Network response was not ok');
+            throw new Error('Ошибка ответа сети');
         }
 
         const data = await response.json();
 
         // Получаем нужное значение из JSON и возвращаем его
-        const someValue = data.rootDir; //
-        return someValue;
+        return data.root;
     } catch (error) {
         // Обработка ошибок
-        console.error('There has been a problem with your fetch operation:', error);
+        console.log('Возникла проблема с операцией получения данных:', error);
+        alert('Возникла проблема с операцией получения данных');
     }
 }

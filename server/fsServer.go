@@ -30,15 +30,30 @@ func HandleFileRequest(w http.ResponseWriter, r *http.Request) {
 
 	// Получение параметров запроса
 	root, sortOrder, err := service.GetRequestParams(r)
+	rootDir := os.Getenv("ROOT_DIR")
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		response := service.ResponseData{
+			ErrorCode:    1,
+			ErrorMessage: fmt.Sprintf("Ошибка получения пути, будет выбран путь по умолчанию:", err),
+			Data:         nil,
+			Root:         rootDir,
+		}
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(response)
+		return
 	}
 
 	// Получение списка файлов из каталога
 	entries, err := os.ReadDir(root)
 	if err != nil {
-		// http.StatusInternalServerError - Вернет статус ошибки 500
-		http.Error(w, fmt.Sprintf("Ошибка чтения директории: %v", err), http.StatusInternalServerError)
+		response := service.ResponseData{
+			ErrorCode:    1,
+			ErrorMessage: fmt.Sprintf("Ошибка чтения директории: %v", err),
+			Data:         nil,
+			Root:         root,
+		}
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(response)
 		return
 	}
 
@@ -46,12 +61,19 @@ func HandleFileRequest(w http.ResponseWriter, r *http.Request) {
 	fileInfoWithSizes := service.ProcessFiles(root, entries)
 	// Сортировка файлов и директорий по размеру
 	service.SortFiles(fileInfoWithSizes, sortOrder)
+	// Тип отправки ответа на клиент
+	response := service.ResponseData{
+		ErrorCode:    0,
+		ErrorMessage: "",
+		Data:         fileInfoWithSizes,
+		Root:         rootDir,
+	}
 
 	// Используется для формирования и отправки HTTP-ответов клиенту в формате json
 	w.Header().Set("Content-Type", "application/json")
 	// json.NewEncoder(w) создает новый JSON-энкодер, который будет записывать данные прямо в http.ResponseWriter (w), то есть отправлять данные клиенту
 	// .Encode(fileInfoWithSizes) преобразует fileInfoWithSizes (срез структур FileInfoWithSize) в JSON-формат и отправляет его в ответе
-	err = json.NewEncoder(w).Encode(fileInfoWithSizes)
+	err = json.NewEncoder(w).Encode(response)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Ошибка кодирования в JSON: %v", err), http.StatusInternalServerError)
 		return
@@ -61,7 +83,7 @@ func HandleFileRequest(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("Обработка запроса: %v\n", duration)
 }
 
-func ServerStatusControl() {
+func StatusControl() {
 
 	// Загружаем переменные из .env файла
 	err := config.LoadEnv("config/serverPort.env")
@@ -80,7 +102,7 @@ func ServerStatusControl() {
 
 	// Регистрация обработчиков
 	http.HandleFunc("/fs", HandleFileRequest)
-	http.HandleFunc("/config", HandleConfigRequest) // Новый обработчик
+	// Отображение представления localhost:SERVER_PORT
 	fs := http.FileServer(http.Dir("./view"))
 	http.Handle("/", fs)
 
@@ -117,32 +139,4 @@ func ServerStatusControl() {
 	}
 
 	fmt.Println("Сервер успешно остановлен")
-}
-
-// HandleConfigRequest - обработчик для передачи переменной окружения
-func HandleConfigRequest(w http.ResponseWriter, r *http.Request) {
-	start := time.Now()
-
-	// Добавляем заголовки CORS
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-
-	// Получаем значение переменной окружения
-	rootDir := os.Getenv("ROOT_DIR")
-	if rootDir == "" {
-		rootDir = "/" // Значение по умолчанию, если переменная окружения не установлена
-	}
-
-	// Формируем JSON ответ
-	response := map[string]string{"rootDir": rootDir}
-	w.Header().Set("Content-Type", "application/json")
-	err := json.NewEncoder(w).Encode(response)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("Ошибка кодирования в JSON: %v", err), http.StatusInternalServerError)
-		return
-	}
-
-	duration := time.Since(start)
-	fmt.Printf("Обработка запроса передачи переменной окружения: %v\n", duration)
 }
