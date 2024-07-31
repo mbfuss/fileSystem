@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/mbfuss/sortingFiles/httpserver/service"
 	"log"
 	"net/http"
 	"os"
@@ -11,7 +12,6 @@ import (
 	"time"
 
 	"github.com/mbfuss/sortingFiles/config"
-	"github.com/mbfuss/sortingFiles/service"
 )
 
 // HandleFileRequest - функция, которая обрабатывает http запросы
@@ -103,7 +103,7 @@ func StatusControl() {
 	// Регистрация обработчиков
 	http.HandleFunc("/fs", HandleFileRequest)
 	// Отображение представления localhost:SERVER_PORT
-	fs := http.FileServer(http.Dir("./view"))
+	fs := http.FileServer(http.Dir("./dist"))
 	http.Handle("/", fs)
 
 	// Канал для получения системных сигналов
