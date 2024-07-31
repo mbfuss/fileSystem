@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/mbfuss/sortingFiles/httpserver/service"
 	"log"
 	"net/http"
 	"os"
@@ -12,6 +11,7 @@ import (
 	"time"
 
 	"github.com/mbfuss/sortingFiles/config"
+	"github.com/mbfuss/sortingFiles/service"
 )
 
 // HandleFileRequest - функция, которая обрабатывает http запросы

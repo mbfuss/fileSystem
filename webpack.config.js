@@ -2,7 +2,7 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
-    entry: './src/main.js', // Входная точка вашего приложения
+    entry: './src/js/main.js', // Входная точка вашего приложения
     output: {
         filename: 'bundle.js', // Имя выходного файла
         path: path.resolve(__dirname, 'dist'), // Папка для выходных файлов
@@ -26,9 +26,5 @@ module.exports = {
             filename: 'index.html' // Имя выходного HTML файла
         })
     ],
-    devServer: {
-        compress: true,
-        port: 9000
-    },
     mode: 'development' // Режим сборки (development или production)
 };

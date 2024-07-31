@@ -1,10 +1,12 @@
+// js/main.js
+
 // Импортируем необходимые модули и функции
 import { fetchData } from './fetchData.js';
 import { updateTable } from './updateTable.js';
 import { navigateToDirectory, navigateBack } from './navigate.js';
 import { addEventHandlers } from './eventHandlers.js';
 import { fetchConfig } from './envConfigLoad.js';
-import './styles.css'
+import "../styles.css"
 
 const asc = "asc";
 const desc = "desc";
