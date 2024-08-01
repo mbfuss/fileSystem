@@ -1,13 +1,13 @@
-// Импортируем необходимые модули и функции
+// main.ts
+
 import { fetchData } from './fetchData';
 import { updateTable } from './updateTable';
 import { navigateToDirectory, navigateBack } from './navigate';
 import { addEventHandlers } from './eventHandlers';
 import { fetchConfig } from './envConfigLoad';
-import "../styles.css";
+import { createFetchAndUpdateTable } from './fetchAndUpdateTable';
+import "../styles/styles.css";
 
-const asc: 'asc' = "asc";
-const desc: 'desc' = "desc";
 
 // Интерфейсы для элементов DOM
 interface FileTableRow {
@@ -40,38 +40,19 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Функция для получения текущего пути
     const getCurrentRoot = (): string => currentRoot;
 
-    // Функция для получения данных с сервера и обновления таблицы
-    const fetchAndUpdateTable = () => {
-        // Получаем порядок сортировки из слайдера
-        const sortOrder: 'asc' | 'desc' = sortOrderSlider.value === "0" ? desc : asc;
-        // Блокируем элементы управления до завершения загрузки конфигурации
-        toggleControls(true);
-        // Показать индикатор загрузки
-        loader.style.display = 'block';
-        // Получаем данные с сервера и обновляем таблицу
-        fetchData(
-            currentRoot,
-            sortOrder,
-            (data: FileTableRow[]) => {
-                updateTable(data, fileTableBody, navigateToDirectory(getCurrentRoot, setCurrentRoot, fetchAndUpdateTable));
-            },
-            currentPath
-        ).finally(() => {
-            // Скрыть индикатор загрузки
-            loader.style.display = 'none';
-            // Разблокируем элементы управления после завершения загрузки конфигурации и данных
-            toggleControls(false);
-        });
-    };
+    // Создаем функцию для получения данных с сервера и обновления таблицы
+    const fetchAndUpdateTable = createFetchAndUpdateTable(
+        fetchData,
+        updateTable,
+        (dirName: string) => navigateToDirectory(getCurrentRoot, setCurrentRoot, fetchAndUpdateTable)(dirName),
+        sortOrderSlider,
+        fileTableBody,
+        loader,
+        currentPath,
+        getCurrentRoot
+    );
 
-    // Функция для блокировки и разблокировки элементов управления
-    const toggleControls = (isDisabled: boolean) => {
-        sortOrderSlider.classList.toggle('disabled', isDisabled);
-        cancelButton.classList.toggle('disabled', isDisabled);
-        fileTableBody.classList.toggle('disabled', isDisabled);
-    };
-
-    // Добавляем обработчики событий к элементам управления.
+    // Добавляем обработчики событий к элементам управления
     addEventHandlers(
         sortOrderSlider,
         cancelButton,
@@ -79,6 +60,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         navigateBack(getCurrentRoot, setCurrentRoot, fetchAndUpdateTable, rootDir),
         currentRoot
     );
+
     // Начальный запрос данных при загрузке страницы
     fetchAndUpdateTable();
 });
