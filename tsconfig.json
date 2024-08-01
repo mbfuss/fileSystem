@@ -106,6 +106,8 @@
     "skipLibCheck": true,                              /* Skip type checking all .d.ts files. */
     "outDir": "./dist",             // Директория для выходных файлов
   },
-  "include": ["src/**/*.ts"],       // Включение всех файлов .ts из папки src
+  "include": [
+    "web/src/**/*.ts"
+  ],       // Включение всех файлов .ts из папки src
   "exclude": ["node_modules"]       // Исключение папки node_modules
 }

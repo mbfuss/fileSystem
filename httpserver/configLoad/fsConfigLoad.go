@@ -1,4 +1,4 @@
-package config
+package configLoad
 
 import (
 	"bufio"

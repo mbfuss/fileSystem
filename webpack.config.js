@@ -2,7 +2,7 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
-    entry: './src/ts/main.ts',          // Входная точка вашего приложения
+    entry: './web/src/ts/main.ts',          // Входная точка вашего приложения
     output: {
         filename: 'bundle.[contenthash].js',            // Имя выходного файла
         path: path.resolve(__dirname, 'dist') // Директория для выходного файла
@@ -25,7 +25,7 @@ module.exports = {
     },
     plugins: [
         new HtmlWebpackPlugin({
-            template: './src/index.html',    // Шаблон HTML файла
+            template: './web/src/index.html',    // Шаблон HTML файла
             filename: 'index.html'           // Имя выходного HTML файла
         })
     ],

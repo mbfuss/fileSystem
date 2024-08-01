@@ -4,14 +4,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/mbfuss/sortingFiles/httpserver/configLoad"
+	"github.com/mbfuss/sortingFiles/httpserver/service"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"time"
-
-	"github.com/mbfuss/sortingFiles/config"
-	"github.com/mbfuss/sortingFiles/service"
 )
 
 // HandleFileRequest - функция, которая обрабатывает http запросы
@@ -86,7 +85,7 @@ func HandleFileRequest(w http.ResponseWriter, r *http.Request) {
 func StatusControl() {
 
 	// Загружаем переменные из .env файла
-	err := config.LoadEnv("config/serverPort.env")
+	err := configLoad.LoadEnv("config/serverPort.env")
 	if err != nil {
 		log.Fatalf("Ошибка загрузки .env файла: %v", err)
 	}
