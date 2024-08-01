@@ -1,5 +1,3 @@
-// js/main.js
-
 // Импортируем необходимые модули и функции
 import { fetchData } from './fetchData.js';
 import { updateTable } from './updateTable.js';
@@ -11,7 +9,6 @@ import {getDomElements} from "./elementsDOM.js";
 const asc = "asc";
 const desc = "desc";
 
-
 // Ждем загрузки DOM перед выполнением скрипта
 document.addEventListener("DOMContentLoaded", async () => {
 
@@ -21,7 +18,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Переменная для хранения корневого пути
     const rootDir = await fetchConfig();
-    console.log('Root directory from config:', rootDir);
 
     // Переменная для хранения текущего пути
     let currentRoot = rootDir;

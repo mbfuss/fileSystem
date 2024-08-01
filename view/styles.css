@@ -4,11 +4,10 @@ body {
     background-color: #ffffff; /* Фоновый цвет страницы */
 }
 
-
 /* Шапка сайта */
 header {
-    background-color: #007bff; /* Синий фон для шапки */
-    color: #fff; /* Белый текст */
+    background-color: #007bff; /* Фон для шапки */
+    color: #fff; /* Для текста */
     padding: 1px 1px; /* Внутренние отступы */
     text-align: center; /* Выравнивание текста по центру */
     width: 100%; /* Устанавливаем ширину на всю доступную ширину экрана */
@@ -17,7 +16,6 @@ header {
     left: 0; /* Устанавливает шапку в левый край экрана */
 
 }
-
 
 /* Контейнер для основного содержимого */
 .container {
@@ -79,7 +77,6 @@ tr.directory:hover {
     cursor: pointer; /* Указатель мыши в виде руки при наведении */
 }
 
-
 .current-path{
     text-align: center; /* Выравнить текст по центре */
     padding: 3px; /* Внутренние отступы */
@@ -89,13 +86,13 @@ tr.directory:hover {
 }
 
 /* Стили для подвала */
-footer {
-    left: 0; bottom: 0; /* Левый нижний угол */
-    padding: 10px; /* Поля вокруг текста */
-    background: #007bff; /* Цвет фона */
-    color: #fff; /* Цвет текста */
-    width: 100%; /* Ширина слоя */
-    text-align: center; /* Выравнить текст по центр */
+.footer {
+    background-color: #007bff;
+    text-align: center;
+    padding: 10px;
+    position: sticky;
+    bottom: 0;
+
 }
 
 /* Стили для текста сортировки */
