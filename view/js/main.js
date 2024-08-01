@@ -6,7 +6,6 @@ import { updateTable } from './updateTable.js';
 import { navigateToDirectory, navigateBack } from './navigate.js';
 import { addEventHandlers } from './eventHandlers.js';
 import { fetchConfig } from './envConfigLoad.js';
-import "../styles.css"
 
 const asc = "asc";
 const desc = "desc";

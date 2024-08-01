@@ -103,7 +103,7 @@ func StatusControl() {
 	// Регистрация обработчиков
 	http.HandleFunc("/fs", HandleFileRequest)
 	// Отображение представления localhost:SERVER_PORT
-	fs := http.FileServer(http.Dir("./dist"))
+	fs := http.FileServer(http.Dir("./view"))
 	http.Handle("/", fs)
 
 	// Канал для получения системных сигналов
