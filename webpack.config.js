@@ -4,7 +4,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 module.exports = {
     entry: './src/ts/main.ts',          // Входная точка вашего приложения
     output: {
-        filename: 'bundle.js',            // Имя выходного файла
+        filename: 'bundle.[contenthash].js',            // Имя выходного файла
         path: path.resolve(__dirname, 'dist') // Директория для выходного файла
     },
     resolve: {
@@ -29,6 +29,5 @@ module.exports = {
             filename: 'index.html'           // Имя выходного HTML файла
         })
     ],
-    devtool: 'source-map',             // Генерация карт исходного кода для отладки
     mode: 'development',               // Режим сборки (можно установить в 'production' для продакшн)
 };

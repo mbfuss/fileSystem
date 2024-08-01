@@ -105,7 +105,6 @@
     // "skipDefaultLibCheck": true,                      /* Skip type checking .d.ts files that are included with TypeScript. */
     "skipLibCheck": true,                              /* Skip type checking all .d.ts files. */
     "outDir": "./dist",             // Директория для выходных файлов
-    "sourceMap": true,              // Создание карт исходного кода
   },
   "include": ["src/**/*.ts"],       // Включение всех файлов .ts из папки src
   "exclude": ["node_modules"]       // Исключение папки node_modules
