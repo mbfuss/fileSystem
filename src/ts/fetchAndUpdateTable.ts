@@ -29,6 +29,7 @@ export const createFetchAndUpdateTable = (
     updateTable: UpdateTableFunction,
     navigateToDirectory: (dirName: string) => void,
     sortOrderSlider: HTMLInputElement,
+    cancelButton: HTMLButtonElement,
     fileTableBody: HTMLTableSectionElement,
     loader: HTMLElement,
     currentPath: HTMLElement,
@@ -37,7 +38,11 @@ export const createFetchAndUpdateTable = (
     return async () => {
         // Получаем порядок сортировки из слайдера
         const sortOrder: 'asc' | 'desc' = sortOrderSlider.value === "0" ? "desc" : "asc";
-
+        const toggleControls: ToggleControlsFunction = (isDisabled: boolean) => {
+            sortOrderSlider.classList.toggle('disabled', isDisabled);
+            cancelButton.classList.toggle('disabled', isDisabled);
+            fileTableBody.classList.toggle('disabled', isDisabled);
+        };
         // Блокируем элементы управления до завершения загрузки конфигурации
         toggleControls(true);
 
@@ -64,9 +69,4 @@ export const createFetchAndUpdateTable = (
 };
 
 // Функция для блокировки и разблокировки элементов управления
-const toggleControls: ToggleControlsFunction = (isDisabled: boolean) => {
-    // Пример кода для блокировки элементов управления
-    // sortOrderSlider.classList.toggle('disabled', isDisabled);
-    // cancelButton.classList.toggle('disabled', isDisabled);
-    // fileTableBody.classList.toggle('disabled', isDisabled);
-};
+

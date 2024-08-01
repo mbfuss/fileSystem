@@ -1,5 +1,3 @@
-// main.ts
-
 import { fetchData } from './fetchData';
 import { updateTable } from './updateTable';
 import { navigateToDirectory, navigateBack } from './navigate';
@@ -7,24 +5,18 @@ import { addEventHandlers } from './eventHandlers';
 import { fetchConfig } from './envConfigLoad';
 import { createFetchAndUpdateTable } from './fetchAndUpdateTable';
 import "../styles/styles.css";
-
-
-// Интерфейсы для элементов DOM
-interface FileTableRow {
-    is_file: string;
-    name: string;
-    format_size: string;
-}
+import {getDomElements} from "./elementsDom";
 
 // Ждем загрузки DOM перед выполнением скрипта
 document.addEventListener("DOMContentLoaded", async () => {
     // Получаем элементы управления из DOM
-    const sortOrderSlider = document.getElementById('sortOrder') as HTMLInputElement; // Слайдер для сортировки
-    const fileTableBody = document.querySelector('#fileTable tbody') as HTMLTableSectionElement; // Тело таблицы для отображения файлов
-    const currentPath = document.getElementById('currentPath') as HTMLElement; // Элемент для отображения текущего пути
-    const cancelButton = document.getElementById('cancelButton') as HTMLButtonElement; // Кнопка для перехода назад
-    const loader = document.getElementById('loader') as HTMLElement;
-
+    const {
+        sortOrderSlider,
+        fileTableBody,
+        currentPath,
+        cancelButton,
+        loader
+    } = getDomElements();
     // Переменная для хранения корневого пути
     const rootDir: string = <string>await fetchConfig();
     console.log('Root directory from config:', rootDir);
@@ -46,6 +38,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         updateTable,
         (dirName: string) => navigateToDirectory(getCurrentRoot, setCurrentRoot, fetchAndUpdateTable)(dirName),
         sortOrderSlider,
+        cancelButton,
         fileTableBody,
         loader,
         currentPath,
@@ -62,5 +55,5 @@ document.addEventListener("DOMContentLoaded", async () => {
     );
 
     // Начальный запрос данных при загрузке страницы
-    fetchAndUpdateTable();
+    await fetchAndUpdateTable();
 });
