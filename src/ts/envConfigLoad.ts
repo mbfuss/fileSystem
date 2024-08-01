@@ -1,9 +1,5 @@
-// configLoader.js
-
-/**
- * Функция для получения конфигурации с сервера
- */
-export async function fetchConfig() {
+// Функция для получения конфигурации с сервера
+export async function fetchConfig(): Promise<string | undefined> {
     try {
         const response = await fetch(`/fs`, { method: "GET" });
 

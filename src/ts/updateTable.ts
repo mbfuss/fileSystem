@@ -1,11 +1,24 @@
+// Тип данных, получаемый с сервера
+interface FileData {
+    is_file: string;
+    name: string;
+    format_size: string;
+}
+
+// Тип для функции навигации
+type NavigateToDirectoryFunction = (dirName: string) => void;
+
 // Экспортируемая функция updateTable используется для обновления таблицы с файлами на странице
 // Параметры:
 // - data: массив данных о файлах и директориях
 // - fileTableBody: элемент таблицы для отображения файлов
 // - navigateToDirectory: функция для перехода в директорию при клике на имя директории
-
-export const updateTable = (data, fileTableBody, navigateToDirectory) => {
-    // Очищаем текущее содержимое таблицы.
+export const updateTable = (
+    data: FileData[],
+    fileTableBody: HTMLTableSectionElement,
+    navigateToDirectory: NavigateToDirectoryFunction
+): void => {
+    // Очищаем текущее содержимое таблицы
     fileTableBody.innerHTML = '';
 
     // Для каждого файла создаем строку в таблице

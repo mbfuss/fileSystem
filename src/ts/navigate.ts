@@ -1,21 +1,30 @@
-// Экспортируемая функция navigateToDirectory используется для перехода в указанную директорию
+// Функция для перехода в указанную директорию
 // Параметры:
 // - getCurrentRoot: функция для получения текущего пути к директории
 // - setCurrentRoot: функция для обновления текущего пути
 // - fetchData: функция для получения данных с сервера
-export const navigateToDirectory = (getCurrentRoot, setCurrentRoot, fetchAndUpdateTable) => (dirName) => {
+export const navigateToDirectory = (
+    getCurrentRoot: () => string,
+    setCurrentRoot: (newRoot: string) => void,
+    fetchAndUpdateTable: () => void
+) => (dirName: string) => {
     const currentRoot = getCurrentRoot();
     const newRoot = currentRoot === '/' ? `/${dirName}` : `${currentRoot}/${dirName}`;
     setCurrentRoot(newRoot);
     fetchAndUpdateTable();
 };
 
-// Экспортируемая функция navigateBack используется для возврата к предыдущей директории
+// Функция для возврата к предыдущей директории
 // Параметры:
 // - getCurrentRoot: функция для получения текущего пути к директории
 // - setCurrentRoot: функция для обновления текущего пути
-// - fetchData: функция для получения данных с сервера.
-export const navigateBack = (getCurrentRoot, setCurrentRoot, fetchAndUpdateTable,rootDir) => () => {
+// - fetchData: функция для получения данных с сервера
+export const navigateBack = (
+    getCurrentRoot: () => string,
+    setCurrentRoot: (newRoot: string) => void,
+    fetchAndUpdateTable: () => void,
+    rootDir: string
+) => () => {
     const currentRoot = getCurrentRoot();
     if (currentRoot === rootDir) return;
 

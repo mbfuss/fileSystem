@@ -2,29 +2,33 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
-    entry: './src/js/main.js', // Входная точка вашего приложения
+    entry: './src/ts/main.ts',          // Входная точка вашего приложения
     output: {
-        filename: 'bundle.js', // Имя выходного файла
-        path: path.resolve(__dirname, 'dist'), // Папка для выходных файлов
-        clean: true // Очистка папки dist перед каждым билдом
+        filename: 'bundle.js',            // Имя выходного файла
+        path: path.resolve(__dirname, 'dist') // Директория для выходного файла
+    },
+    resolve: {
+        extensions: ['.ts', '.js', '.css'],  // Расширения файлов, которые Webpack будет обрабатывать
     },
     module: {
         rules: [
             {
-                test: /\.css$/, // Регулярное выражение для поиска CSS файлов
-                use: ['style-loader', 'css-loader'] // Загрузчики для обработки CSS файлов
+                test: /\.ts$/,                // Применение правил к файлам с расширением .ts
+                use: 'ts-loader',             // Использование ts-loader для обработки TypeScript
+                exclude: /node_modules/,      // Исключение папки node_modules
             },
             {
-                test: /\.html$/, // Регулярное выражение для поиска HTML файлов
-                use: ['html-loader'] // Загрузчик для обработки HTML файлов
-            }
-        ]
+                test: /\.css$/,               // Применение правил к файлам с расширением .css
+                use: ['style-loader', 'css-loader'], // Использование загрузчиков для обработки CSS
+            },
+        ],
     },
     plugins: [
         new HtmlWebpackPlugin({
-            template: './src/index.html', // Шаблон HTML файла
-            filename: 'index.html' // Имя выходного HTML файла
+            template: './src/index.html',    // Шаблон HTML файла
+            filename: 'index.html'           // Имя выходного HTML файла
         })
     ],
-    mode: 'development' // Режим сборки (development или production)
+    devtool: 'source-map',             // Генерация карт исходного кода для отладки
+    mode: 'development',               // Режим сборки (можно установить в 'production' для продакшн)
 };
