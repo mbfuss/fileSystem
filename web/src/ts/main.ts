@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Запрашивает данные с сервера с помощью fetchData
     // Обновляет таблицу с помощью updateTable
     // Обрабатывает навигацию по директориям через navigateToDirectory, передавая текущий корневой путь и обновленную функцию fetchAndUpdateTable
-    // Использует элементы управления (например, слайдер сортировки, кнопку отмены) и индикатор загрузки
+    // Использует элементы управления  и индикатор загрузки
     // Получает текущий корневой путь
     const fetchAndUpdateTable = createFetchAndUpdateTable(
         fetchData,
