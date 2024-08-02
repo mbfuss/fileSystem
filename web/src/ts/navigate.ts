@@ -26,8 +26,9 @@ export const navigateBack = (
     rootDir: string
 ) => () => {
     const currentRoot = getCurrentRoot();
-    if (currentRoot === rootDir) return;
-
+    if (currentRoot === rootDir){
+        return alert("Вы находитесь в корневой директории");
+    }
     const pathParts = currentRoot.split('/').filter(part => part.length > 0);
     pathParts.pop();
     const newRoot = pathParts.length > 0 ? `/${pathParts.join('/')}` : '/';

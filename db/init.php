@@ -39,14 +39,14 @@ if ($conn->query($sql) === TRUE) {
     die("Ошибка создания таблицы: " . $conn->error);
 }
 
-// (Необязательно) Вставка начальных данных
-// $sql = "INSERT INTO file_info (путь, размер, время_выполнения, во_сколько_запрос_сделан)
-// VALUES ('/path/to/file', 12345, 60, UNIX_TIMESTAMP())";
-// if ($conn->query($sql) === TRUE) {
-//     echo "Начальные данные добавлены.<br>";
-// } else {
-//     die("Ошибка добавления данных: " . $conn->error);
-// }
+//  Вставка начальных данных
+$sql = "INSERT INTO file_info (путь, размер, время_выполнения, во_сколько_запрос_сделан)
+VALUES ('/path/to/file', 12345, 60, UNIX_TIMESTAMP())";
+if ($conn->query($sql) === TRUE) {
+    echo "Начальные данные добавлены.<br>";
+} else {
+    die("Ошибка добавления данных: " . $conn->error);
+}
 
 // Закрытие подключения
 $conn->close();

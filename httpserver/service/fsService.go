@@ -64,6 +64,7 @@ func ProcessFiles(root string, entries []os.DirEntry) []FileInfoWithSize {
 			}
 			// Получаем размер текущего элемента
 			size := fileInfo.Size()
+			// Если не директория, то файл
 			isFile := !entry.IsDir()
 			if !isFile {
 				size, err = getDirSize(fullPath)
@@ -93,9 +94,7 @@ func getDirSize(path string) (int64, error) {
 			return err
 		}
 		// Если это файл, добавляем его размер к общему размеру
-		if !info.IsDir() {
-			size += info.Size()
-		}
+		size += info.Size()
 		// Учет размера папки
 		if info.IsDir() {
 			size += 4000
