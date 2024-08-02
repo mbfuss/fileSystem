@@ -19,7 +19,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     } = getDomElements();
     // Переменная для хранения корневого пути
     const rootDir: string = <string>await fetchConfig();
-    console.log('Root directory from config:', rootDir);
 
     // Переменная для хранения текущего пути
     let currentRoot: string = rootDir;
@@ -33,6 +32,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     const getCurrentRoot = (): string => currentRoot;
 
     // Создаем функцию для получения данных с сервера и обновления таблицы
+    // Запрашивает данные с сервера с помощью fetchData
+    // Обновляет таблицу с помощью updateTable
+    // Обрабатывает навигацию по директориям через navigateToDirectory, передавая текущий корневой путь и обновленную функцию fetchAndUpdateTable
+    // Использует элементы управления (например, слайдер сортировки, кнопку отмены) и индикатор загрузки
+    // Получает текущий корневой путь
     const fetchAndUpdateTable = createFetchAndUpdateTable(
         fetchData,
         updateTable,
@@ -45,7 +49,12 @@ document.addEventListener("DOMContentLoaded", async () => {
         getCurrentRoot
     );
 
-    // Добавляем обработчики событий к элементам управления
+    // Функция для привязки обработчиков событий к элементам управления
+    // sortOrderSlider для обработки изменения порядка сортировки
+    // cancelButton для обработки отмены действия
+    // fetchAndUpdateTable для обновления таблицы
+    // navigateBack для обработки навигации назад
+    // currentRoot — текущий корневой путь
     addEventHandlers(
         sortOrderSlider,
         cancelButton,
