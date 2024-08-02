@@ -68,5 +68,5 @@ export const createFetchAndUpdateTable = (
     };
 };
 
-// Функция для блокировки и разблокировки элементов управления
+
 

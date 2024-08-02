@@ -13,19 +13,14 @@ import (
 	"time"
 )
 
+// Время для завершения сервера
+const timeOut = 5 * time.Second
+
 // HandleFileRequest - функция, которая обрабатывает http запросы
 // http.ResponseWriter — интерфейс, который предоставляет методы для формирования и отправки HTTP-ответов клиенту
 // http.Request — это указатель на структуру http.Request в Go, которая представляет собой HTTP-запрос, отправленный клиентом на сервер
 func HandleFileRequest(w http.ResponseWriter, r *http.Request) {
 	start := time.Now()
-
-	// Добавляем заголовки CORS
-	// Любой домен может получить доступ к ресурсам этого сервера
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	// Разрешены только методы HTTP-запросов GET и OPTIONS
-	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
-	// Клиенту разрешается использовать заголовок Content-Type в запросах.
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
 	// Получение параметров запроса
 	root, sortOrder, err := service.GetRequestParams(r)
@@ -126,8 +121,8 @@ func StatusControl() {
 	<-stop
 	fmt.Println("Получен сигнал завершения, остановка сервера...")
 
-	//  Если сервер не завершится в течение 5 секунд, контекст будет отменён, и остановка сервера прервется
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	//  Если сервер не завершится в течение 5 секунд, сервер принудительно завершит работу
+	ctx, cancel := context.WithTimeout(context.Background(), timeOut)
 	// Используется для отложенного вызова функции cancel. Это значит, что функция cancel будет вызвана автоматически,
 	// когда выполнение функции ServerStart завершится, даже если произойдёт ошибка. Очистка ресурсов context.WithTimeout
 	defer cancel()
