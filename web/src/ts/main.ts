@@ -1,8 +1,7 @@
-import { fetchData } from './fetchData';
+import {fetchData, fetchRootConfig} from './fetchData';
 import { updateTable } from './updateTable';
 import { navigateToDirectory, navigateBack } from './navigate';
 import { addEventHandlers } from './eventHandlers';
-import { fetchConfig } from './envConfigLoad';
 import { createFetchAndUpdateTable } from './fetchAndUpdateTable';
 import "../styles/styles.css";
 import {getDomElements} from "./elementsDom";
@@ -18,7 +17,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         loader
     } = getDomElements();
     // Переменная для хранения корневого пути
-    const rootDir: string = <string>await fetchConfig();
+    const rootDir: string = <string>await fetchRootConfig();
 
     // Переменная для хранения текущего пути
     let currentRoot: string = rootDir;
