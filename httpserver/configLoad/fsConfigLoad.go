@@ -23,7 +23,7 @@ func LoadEnv(filename string) error {
 		if strings.TrimSpace(line) == "" || strings.HasPrefix(line, "#") {
 			continue // Пропустить пустые строки и комментарии
 		}
-		// key - SERVER_PORT, value - 8080
+		// key - SERVER_PORT, value - SERVER_PORT
 		parts := strings.SplitN(line, "=", 2)
 		if len(parts) != 2 {
 			continue // Пропустить строки без "="
