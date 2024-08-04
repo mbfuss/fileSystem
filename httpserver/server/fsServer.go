@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/mbfuss/sortingFiles/httpserver/configLoad"
 	"github.com/mbfuss/sortingFiles/httpserver/service"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -78,37 +79,102 @@ func HandleFileRequest(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("Обработка запроса: %v\n", duration)
 
 	// ЛОГИКА ОТПРАВКИ POST ЗАПРОСА НА APPACHE PHP
-	endTime := time.Now()
+	endTime := time.Now() // Фиксируем текущее время для вычисления длительности обработки запроса
 
-	// Собираем данные для отправки
+	// Инициализируем переменную для хранения общего размера файлов
 	totalSize := int64(0)
+
+	// Проходим по всем файлам и суммируем их размеры
 	for _, fileInfo := range fileInfoWithSizes {
 		totalSize += fileInfo.Size
 	}
 
+	// Подготавливаем данные для отправки в формате JSON
 	logData := map[string]interface{}{
-		"path":         root,
-		"size":         totalSize,
-		"duration":     endTime.Sub(start).Milliseconds(),
-		"request_time": start.Format(time.RFC3339),
+		"path":         root,                              // Путь к директории
+		"size":         totalSize,                         // Общий размер всех файлов
+		"duration":     endTime.Sub(start).Milliseconds(), // Длительность обработки запроса в миллисекундах
+		"request_time": start.Format(time.RFC3339),        // Время начала запроса в формате RFC3339
 	}
 
+	// Кодируем данные в формат JSON
 	logDataJson, err := json.Marshal(logData)
 	if err != nil {
+		// Если произошла ошибка при кодировании данных в JSON, выводим сообщение об ошибке и завершаем функцию
 		fmt.Printf("Ошибка кодирования данных для логирования: %v\n", err)
 		return
 	}
 
+	// Определяем URL для отправки POST-запроса на PHP-скрипт
 	phpUrl := "http://localhost:8080/setStat.php"
+
+	// Отправляем POST-запрос с данными в формате JSON
 	resp, err := http.Post(phpUrl, "application/json", bytes.NewBuffer(logDataJson))
 	if err != nil {
+		// Если произошла ошибка при отправке запроса, выводим сообщение об ошибке и завершаем функцию
 		fmt.Printf("Ошибка отправки данных на сервер Apache PHP: %v\n", err)
+		return
+	}
+
+	// Закрываем тело ответа после завершения работы с ним
+	defer resp.Body.Close()
+
+	// Проверяем статус ответа от PHP-сервера
+	if resp.StatusCode != http.StatusOK {
+		// Если статус ответа не 200 OK, выводим сообщение об ошибке
+		fmt.Printf("Сервер Apache PHP вернул ошибку: %v\n", resp.Status)
+	}
+
+}
+
+// FileInfo - структура для данных, полученных из MySQL
+type FileInfo struct {
+	ID          string `json:"id"`           // Primary key
+	Path        string `json:"path"`         // Путь из бд
+	Size        string `json:"size"`         // Размер директории
+	Duration    string `json:"duration"`     // Время обработки запроса
+	RequestTime string `json:"request_time"` // Время отправки запроса
+}
+
+// HandeGetFileInfo - обработчик для получения данных из MySQL через PHP
+func HandleGetFileInfo(w http.ResponseWriter, r *http.Request) {
+	phpUrl := "http://localhost:8080/getStat.php"
+
+	// Отправка GET-запроса к PHP-скрипту
+	resp, err := http.Get(phpUrl)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Ошибка при отправке запроса на PHP сервер: %v", err), http.StatusInternalServerError)
 		return
 	}
 	defer resp.Body.Close()
 
+	// Проверка на успешный ответ
 	if resp.StatusCode != http.StatusOK {
-		fmt.Printf("Сервер Apache PHP вернул ошибку: %v\n", resp.Status)
+		http.Error(w, fmt.Sprintf("PHP сервер вернул ошибку: %v", resp.Status), http.StatusInternalServerError)
+		return
+	}
+
+	// Чтение тела ответа
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Ошибка при чтении ответа от PHP сервера: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	// Декодирование JSON-ответа
+	var fileInfo []FileInfo
+	err = json.Unmarshal(body, &fileInfo)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Ошибка при декодировании JSON ответа: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	// Отправка данных клиенту в формате JSON
+	w.Header().Set("Content-Type", "application/json")
+	err = json.NewEncoder(w).Encode(fileInfo)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Ошибка при кодировании JSON ответа: %v", err), http.StatusInternalServerError)
+		return
 	}
 }
 
@@ -134,6 +200,7 @@ func StatusControl() {
 	// Отображение представления localhost:SERVER_PORT
 	fs := http.FileServer(http.Dir("./dist"))
 	http.Handle("/", fs)
+	http.HandleFunc("/getfileinfo", HandleGetFileInfo)
 
 	// Канал для получения системных сигналов
 	stop := make(chan os.Signal, 1)
