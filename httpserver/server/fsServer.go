@@ -1,6 +1,7 @@
 package server
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -75,6 +76,40 @@ func HandleFileRequest(w http.ResponseWriter, r *http.Request) {
 
 	duration := time.Since(start)
 	fmt.Printf("Обработка запроса: %v\n", duration)
+
+	// ЛОГИКА ОТПРАВКИ POST ЗАПРОСА НА APPACHE PHP
+	endTime := time.Now()
+
+	// Собираем данные для отправки
+	totalSize := int64(0)
+	for _, fileInfo := range fileInfoWithSizes {
+		totalSize += fileInfo.Size
+	}
+
+	logData := map[string]interface{}{
+		"path":         root,
+		"size":         totalSize,
+		"duration":     endTime.Sub(start).Milliseconds(),
+		"request_time": start.Format(time.RFC3339),
+	}
+
+	logDataJson, err := json.Marshal(logData)
+	if err != nil {
+		fmt.Printf("Ошибка кодирования данных для логирования: %v\n", err)
+		return
+	}
+
+	phpUrl := "http://localhost:8080/setStat.php"
+	resp, err := http.Post(phpUrl, "application/json", bytes.NewBuffer(logDataJson))
+	if err != nil {
+		fmt.Printf("Ошибка отправки данных на сервер Apache PHP: %v\n", err)
+		return
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		fmt.Printf("Сервер Apache PHP вернул ошибку: %v\n", resp.Status)
+	}
 }
 
 func StatusControl() {
