@@ -43,6 +43,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         (dirName: string) => navigateToDirectory(getCurrentRoot, setCurrentRoot, fetchAndUpdateTable)(dirName),
         sortOrderSlider,
         cancelButton,
+        statButton,
         fileTableBody,
         loader,
         currentPath,

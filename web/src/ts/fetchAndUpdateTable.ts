@@ -30,6 +30,7 @@ export const createFetchAndUpdateTable = (
     navigateToDirectory: (dirName: string) => void,
     sortOrderSlider: HTMLInputElement,
     cancelButton: HTMLButtonElement,
+    statButton: HTMLButtonElement,
     fileTableBody: HTMLTableSectionElement,
     loader: HTMLElement,
     currentPath: HTMLElement,
@@ -42,6 +43,7 @@ export const createFetchAndUpdateTable = (
             sortOrderSlider.classList.toggle('disabled', isDisabled);
             cancelButton.classList.toggle('disabled', isDisabled);
             fileTableBody.classList.toggle('disabled', isDisabled);
+            statButton.classList.toggle('disabled', isDisabled);
         };
         // Блокируем элементы управления до завершения загрузки конфигурации
         toggleControls(true);
