@@ -129,15 +129,15 @@ func HandleFileRequest(w http.ResponseWriter, r *http.Request) {
 
 // FileInfo - структура для данных, полученных из MySQL
 type FileInfo struct {
-	ID          string `json:"id"`           // Primary key
+	ID          int64  `json:"id"`           // Primary key
 	Path        string `json:"path"`         // Путь из бд
 	Size        string `json:"size"`         // Размер директории
 	Duration    string `json:"duration"`     // Время обработки запроса
 	RequestTime string `json:"request_time"` // Время отправки запроса
 }
 
-// HandeGetFileInfo - обработчик для получения данных из MySQL через PHP
-func HandleGetFileInfo(w http.ResponseWriter, r *http.Request) {
+// HandleGetFileInfo - обработчик для получения данных из MySQL через PHP
+func HandleGetFileInfo(w http.ResponseWriter, _ *http.Request) {
 	phpUrl := "http://localhost:8080/getStat.php"
 
 	// Отправка GET-запроса к PHP-скрипту
