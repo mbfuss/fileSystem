@@ -14,6 +14,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         fileTableBody,
         currentPath,
         cancelButton,
+        statButton,
         loader
     } = getDomElements();
     // Переменная для хранения корневого пути
@@ -57,6 +58,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     addEventHandlers(
         sortOrderSlider,
         cancelButton,
+        statButton,
         fetchAndUpdateTable,
         navigateBack(getCurrentRoot, setCurrentRoot, fetchAndUpdateTable, rootDir),
         currentRoot

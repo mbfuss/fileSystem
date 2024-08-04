@@ -35,3 +35,4 @@ export const navigateBack = (
     setCurrentRoot(newRoot);
     fetchAndUpdateTable();
 };
+

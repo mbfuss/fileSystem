@@ -129,7 +129,7 @@ func HandleFileRequest(w http.ResponseWriter, r *http.Request) {
 
 // FileInfo - структура для данных, полученных из MySQL
 type FileInfo struct {
-	ID          int64  `json:"id"`           // Primary key
+	ID          string `json:"id"`           // Primary key
 	Path        string `json:"path"`         // Путь из бд
 	Size        string `json:"size"`         // Размер директории
 	Duration    string `json:"duration"`     // Время обработки запроса

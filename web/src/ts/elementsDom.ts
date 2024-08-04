@@ -5,6 +5,7 @@ export const getDomElements = () => {
         fileTableBody: document.querySelector('#fileTable tbody') as HTMLTableSectionElement, // Тело таблицы для отображения файлов
         currentPath: document.getElementById('currentPath') as HTMLElement, // Элемент для отображения текущего пути
         cancelButton: document.getElementById('cancelButton') as HTMLButtonElement, // Кнопка для перехода назад
+        statButton: document.getElementById("statButton") as HTMLButtonElement, // Кнопка для перехода на стистистику
         loader: document.getElementById('loader') as HTMLElement // Индикатор загрузки
     };
 };

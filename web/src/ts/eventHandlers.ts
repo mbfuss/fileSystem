@@ -6,6 +6,7 @@ type NavigateBackFunction = () => void;
 export const addEventHandlers = (
     sortOrderSlider: HTMLInputElement,  // Элемент слайдера
     cancelButton: HTMLButtonElement,    // Кнопка отмены
+    statButton: HTMLButtonElement,
     fetchData: FetchDataFunction,       // Функция для запроса данных
     navigateBack: NavigateBackFunction, // Функция для возврата
     currentRoot: string                 // Текущий путь
@@ -22,4 +23,9 @@ export const addEventHandlers = (
 
     // Добавляем обработчик события 'click' к кнопке отмены
     cancelButton.addEventListener('click', navigateBack);
+    // Добавляем обработчик события 'click' к кнопке статистики
+    statButton.addEventListener('click', () => {
+        // Переход на указанный URL
+        window.location.href = '/getfileinfo';
+    });
 };
