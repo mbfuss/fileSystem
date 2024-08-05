@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"github.com/mbfuss/sortingFiles/httpserver/configLoad"
 	"github.com/mbfuss/sortingFiles/httpserver/service"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -106,8 +106,8 @@ func HandleFileRequest(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Определяем URL для отправки POST-запроса на PHP-скрипт
-	phpUrl := "http://localhost:8080/setStat.php"
-
+	aRoot := os.Getenv("APACHE_ROOT")
+	phpUrl := aRoot + "/setStat.php"
 	// Отправляем POST-запрос с данными в формате JSON
 	resp, err := http.Post(phpUrl, "application/json", bytes.NewBuffer(logDataJson))
 	if err != nil {
@@ -127,19 +127,10 @@ func HandleFileRequest(w http.ResponseWriter, r *http.Request) {
 
 }
 
-// FileInfo - структура для данных, полученных из MySQL
-type FileInfo struct {
-	ID          string `json:"id"`           // Primary key
-	Path        string `json:"path"`         // Путь из бд
-	Size        string `json:"size"`         // Размер директории
-	Duration    string `json:"duration"`     // Время обработки запроса
-	RequestTime string `json:"request_time"` // Время отправки запроса
-}
-
 // HandleGetFileInfo - обработчик для получения данных из MySQL через PHP
 func HandleGetFileInfo(w http.ResponseWriter, _ *http.Request) {
-	phpUrl := "http://localhost:8080/getStat.php"
-
+	aRoot := os.Getenv("APACHE_ROOT")
+	phpUrl := aRoot + "/getStat.php"
 	// Отправка GET-запроса к PHP-скрипту
 	resp, err := http.Get(phpUrl)
 	if err != nil {
@@ -155,27 +146,15 @@ func HandleGetFileInfo(w http.ResponseWriter, _ *http.Request) {
 	}
 
 	// Чтение тела ответа
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Ошибка при чтении ответа от PHP сервера: %v", err), http.StatusInternalServerError)
 		return
 	}
 
-	// Декодирование JSON-ответа
-	var fileInfo []FileInfo
-	err = json.Unmarshal(body, &fileInfo)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("Ошибка при декодировании JSON ответа: %v", err), http.StatusInternalServerError)
-		return
-	}
-
-	// Отправка данных клиенту в формате JSON
-	w.Header().Set("Content-Type", "application/json")
-	err = json.NewEncoder(w).Encode(fileInfo)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("Ошибка при кодировании JSON ответа: %v", err), http.StatusInternalServerError)
-		return
-	}
+	// Отправка HTML-данных клиенту
+	w.Header().Set("Content-Type", "text/html")
+	w.Write(body)
 }
 
 func StatusControl() {
