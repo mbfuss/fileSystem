@@ -6,7 +6,7 @@ type NavigateBackFunction = () => void;
 export const addEventHandlers = (
     sortOrderSlider: HTMLInputElement,  // Элемент слайдера
     cancelButton: HTMLButtonElement,    // Кнопка отмены
-    statButton: HTMLButtonElement,
+    statButton: HTMLButtonElement,      // Кнопка статистики
     fetchData: FetchDataFunction,       // Функция для запроса данных
     navigateBack: NavigateBackFunction, // Функция для возврата
     currentRoot: string                 // Текущий путь

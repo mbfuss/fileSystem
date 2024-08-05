@@ -23,7 +23,6 @@ type ToggleControlsFunction = (isDisabled: boolean) => void;
 
 type FetchAndUpdateTableFunction = () => Promise<void>;
 
-// Экспортируемая функция
 export const createFetchAndUpdateTable = (
     fetchData: FetchDataFunction,
     updateTable: UpdateTableFunction,
