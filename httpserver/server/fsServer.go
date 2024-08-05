@@ -79,7 +79,6 @@ func HandleFileRequest(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("Обработка запроса: %v\n", duration)
 
 	// ЛОГИКА ОТПРАВКИ POST ЗАПРОСА НА APACHE PHP
-	//endTime := time.Now() // Фиксируем текущее время для вычисления длительности обработки запроса
 
 	// Инициализируем переменную для хранения общего размера файлов
 	totalSize := int64(0)
