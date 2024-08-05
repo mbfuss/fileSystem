@@ -78,8 +78,8 @@ func HandleFileRequest(w http.ResponseWriter, r *http.Request) {
 	duration := time.Since(start)
 	fmt.Printf("Обработка запроса: %v\n", duration)
 
-	// ЛОГИКА ОТПРАВКИ POST ЗАПРОСА НА APPACHE PHP
-	endTime := time.Now() // Фиксируем текущее время для вычисления длительности обработки запроса
+	// ЛОГИКА ОТПРАВКИ POST ЗАПРОСА НА APACHE PHP
+	//endTime := time.Now() // Фиксируем текущее время для вычисления длительности обработки запроса
 
 	// Инициализируем переменную для хранения общего размера файлов
 	totalSize := int64(0)
@@ -91,10 +91,9 @@ func HandleFileRequest(w http.ResponseWriter, r *http.Request) {
 
 	// Подготавливаем данные для отправки в формате JSON
 	logData := map[string]interface{}{
-		"path":         root,                              // Путь к директории
-		"size":         totalSize,                         // Общий размер всех файлов
-		"duration":     endTime.Sub(start).Milliseconds(), // Длительность обработки запроса в миллисекундах
-		"request_time": start.Format(time.RFC3339),        // Время начала запроса в формате RFC3339
+		"path":     root,                    // Путь к директории
+		"size":     totalSize,               // Общий размер всех файлов
+		"duration": duration.Milliseconds(), // Длительность обработки запроса в миллисекундах
 	}
 
 	// Кодируем данные в формат JSON
