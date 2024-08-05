@@ -1,41 +1,41 @@
 <?php
-// Устанавливаем параметры подключения к базе данных
-$servername = "localhost";
-$username = "root";
-$password = "12346";
-$dbname = "fsdatabase";
 
-// Создаем подключение
-$conn = new mysqli($servername, $username, $password, $dbname);
+require 'connDB.php';
 
-// Проверяем подключение
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+try {
+    // Создаем подключение
+    $conn = getDatabaseConnection();
 
-// Получаем JSON-данные из POST-запроса
-$data = file_get_contents('php://input');
-$data = json_decode($data, true);
+    // Извлекаем весь содержимое тела POST-запроса как строку
+    $data = file_get_contents('php://input');
+    // Преобразует JSON-строку в ассоциативный массив 
+    $data = json_decode($data, true);
 
-// Проверяем корректность данных
-if (isset($data['path']) && isset($data['size']) && isset($data['duration']) && isset($data['request_time'])) {
-    $path = $conn->real_escape_string($data['path']);
+    // Проверяем содержатся ли в массиве $data ключи 'path', 'size' и 'duration'
+    if (!isset($data['path']) || !isset($data['size']) || !isset($data['duration'])) {
+        throw new Exception("Неверные данные");
+    }
+
+    $path = $conn->real_escape_string($data['path']); // экранирование, убираем лишнии символы 
     $size = (int)$data['size']; // Преобразуем к целому числу
     $duration = (int)$data['duration']; // Преобразуем к целому числу
-    $request_time = $conn->real_escape_string($data['request_time']);
 
-    // Вставляем данные в базу данных
-    $sql = "INSERT INTO file_info (path, size, duration, request_time) VALUES ('$path', $size, $duration, '$request_time')";
-    
+    // Вставляем данные в базу данных, используя NOW() для текущего времени
+    $sql = "INSERT INTO file_info (path, size, duration, request_time) VALUES ('$path', $size, $duration, NOW())";
+
+    // Проверяем был ли выполен sql запрос
     if ($conn->query($sql) === TRUE) {
-        echo "New record created successfully";
+        echo "Новая запись успешно создана";
     } else {
-        echo "Error: " . $sql . "<br>" . $conn->error;
+        throw new Exception("Ошибка выполнения запроса: " . $conn->error);
     }
-} else {
-    echo "Invalid data";
+} catch (Exception $e) {
+    echo "Ошибка: " . htmlspecialchars($e->getMessage());
+} finally {
+    // Закрываем соединение
+    // переменная $conn существует и является экземпляром класса mysqli
+    if (isset($conn) && $conn instanceof mysqli) {
+        $conn->close();
+    }
 }
-
-// Закрываем соединение
-$conn->close();
 ?>
