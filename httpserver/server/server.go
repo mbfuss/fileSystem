@@ -5,7 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/mbfuss/sortingFiles/httpserver/configLoad"
+	"github.com/mbfuss/sortingFiles/httpserver/config_load"
 	"github.com/mbfuss/sortingFiles/httpserver/service"
 	"io"
 	"log"
@@ -161,7 +161,7 @@ func HandleGetFileInfo(w http.ResponseWriter, _ *http.Request) {
 func StartApp() {
 
 	// Загружаем переменные из .env файла
-	err := configLoad.LoadEnv("config/serverPort.env")
+	err := config_load.LoadEnv("config/serverPort.env")
 	if err != nil {
 		log.Fatalf("Ошибка загрузки .env файла: %v", err)
 	}
