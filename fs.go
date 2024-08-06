@@ -5,6 +5,6 @@ import (
 )
 
 func main() {
-	server.StatusControl()
+	server.StartApp()
 
 }

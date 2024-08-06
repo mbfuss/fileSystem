@@ -16,7 +16,11 @@ import (
 )
 
 // Время для завершения сервера
-const timeOut = 5 * time.Second
+const (
+	timeOut    = 5 * time.Second
+	serverPort = "SERVER_PORT"
+	rootDir    = "ROOT_DIR"
+)
 
 // HandleFileRequest - функция, которая обрабатывает http запросы
 // http.ResponseWriter — интерфейс, который предоставляет методы для формирования и отправки HTTP-ответов клиенту
@@ -26,7 +30,7 @@ func HandleFileRequest(w http.ResponseWriter, r *http.Request) {
 
 	// Получение параметров запроса
 	root, sortOrder, err := service.GetRequestParams(r)
-	rootDir := os.Getenv("ROOT_DIR")
+	rootDir := os.Getenv(rootDir)
 	if err != nil {
 		response := service.ResponseData{
 			ErrorCode:    1,
@@ -82,7 +86,6 @@ func HandleFileRequest(w http.ResponseWriter, r *http.Request) {
 
 	// Инициализируем переменную для хранения общего размера файлов
 	totalSize := int64(0)
-
 	// Проходим по всем файлам и суммируем их размеры
 	for _, fileInfo := range fileInfoWithSizes {
 		totalSize += fileInfo.Size
@@ -155,7 +158,7 @@ func HandleGetFileInfo(w http.ResponseWriter, _ *http.Request) {
 	w.Write(body)
 }
 
-func StatusControl() {
+func StartApp() {
 
 	// Загружаем переменные из .env файла
 	err := configLoad.LoadEnv("config/serverPort.env")
@@ -164,7 +167,7 @@ func StatusControl() {
 	}
 
 	// Читаем порт из переменной окружения
-	port := os.Getenv("SERVER_PORT")
+	port := os.Getenv(serverPort)
 
 	// Создание нового сервера
 	server := &http.Server{
