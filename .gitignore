@@ -1,0 +1,14 @@
+# Сборочные файлы
+*.bin
+fs
+
+# Ноды
+node_modules/
+
+# Файлы выходной директории Webpack
+dist/
+
+# npm
+package-lock.json
+
+
